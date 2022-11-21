@@ -1,0 +1,16 @@
+1. docker compose up -d: docker-compose.yml의 services를 참고하여 컨테이너 생성 (-d: 백그라운드)
+
+2. docker compose down: docker-compose.yml의 services의 컨테이너 종료
+
+3. docker compose logs -f --tail {num} {service name} : 서비스 컨테이너 로그 출력 (-f: 추적, --tail {num}: num만큼의 최근 라인만 출력)
+- COMPOSE_HTTP_TIMEOUT={num} (출력될 로그가 없는 상태로 60초 지속되면 발생하는 타임아웃을 방지하기 위한 환경변수)
+- 예를 들어 COMPOSE_HTTP_TIMEOUT=3600 docker compose logs -f --tail 70 api-0 api-1 api-2 api-3 의 의미는 아래와 같음
+- 컨테이너(api-0, api-1, api-2, api-3)의 로그 중 마지막 70줄을 추적하며 출력 (타임아웃: 1시간)
+
+4. docker stats: 모든 컨테이너 모니터링 (컨테이너 ID, 이름, CPU, 메모리 등)
+
+5. yes | docker container prune && yes | docker image prune: 중지된 컨테이너 종료 및 사용 불가능한 이미지 제거
+
+6. nvitop: GPU 모니터링
+- 파이썬 패키지이므로 프롬프트 앞에 (base)가 붙은 상태(conda 가상환경)로 명령어를 입력해야함
+- (base)가 없는 상태라면 conda activate를 입력
