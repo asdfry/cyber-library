@@ -1,0 +1,11 @@
+# VSCode config
+.vscode
+
+# Model
+Model
+
+# Log
+logs
+
+# output of check_logs.py
+api_summary.csv
