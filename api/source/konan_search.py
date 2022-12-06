@@ -2,7 +2,6 @@ import time
 from typing import Dict, List
 
 import jpype
-
 from logger_main import logger
 
 
@@ -88,3 +87,5 @@ class KonanSearch:
                 logger.warning(f"Qeury: {query}, Socket error occurred during Konansearch (retry: {cnt})")
                 time.sleep(0.1 * cnt)
                 continue
+        
+        return None
