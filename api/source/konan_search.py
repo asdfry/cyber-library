@@ -1,4 +1,6 @@
+import sys
 import time
+from pathlib import Path
 from typing import Dict, List
 
 import jpype
@@ -7,6 +9,9 @@ from logger_main import logger
 
 class KonanSearch:
     def __init__(self, jar_path: str):
+        if jar_path is None or not Path(jar_path).exists():
+            logger.error(f"Invalid path (konansearch): {jar_path}")
+            sys.exit(1)
         jpype.startJVM(jpype.getDefaultJVMPath(), f"-Djava.class.path={jar_path}", convertStrings=True)
         self.jpkg = jpype.JPackage("com.konantech.konansearch")
 
