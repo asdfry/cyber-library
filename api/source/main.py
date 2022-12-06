@@ -10,7 +10,7 @@ from util import create_content
 
 app = FastAPI()
 sm = SimilarityModule(device_num=os.getenv("DEVICE_NUM"), model_path=os.getenv("MODEL_PATH"))
-ks = KonanSearch(jar_path="konansearch.4.2.jar")
+ks = KonanSearch(jar_path=os.getenv("JAR_PATH"))
 
 
 class Query(BaseModel):
