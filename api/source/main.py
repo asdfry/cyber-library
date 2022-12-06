@@ -3,9 +3,8 @@ from typing import List
 
 from fastapi import FastAPI, status
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-
 from konan_search import KonanSearch
+from pydantic import BaseModel
 from similarity_module import SimilarityModule
 from util import create_content
 
@@ -97,36 +96,35 @@ def search_with_engine(query: Query):
             ),
         )
 
-    try:  # 정상 작동 (유사도 계산 진행 안함)
-        candidates = ks.search_with_engine(query, max_record=200)
+    candidates = ks.search_with_engine(query, max_record=200)
 
-        if not candidates:  # Konansearch 결과가 없는 경우
-            return JSONResponse(
-                status_code=status.HTTP_200_OK,
-                content=create_content(
-                    query=query,
-                    status_code=status.HTTP_200_OK,
-                    message="Search fail (Konansearch result empty)",
-                ),
-            )
-
-        elif len(candidates) > 99:  # Konansearch 결과가 100개 이상인 경우
-            return JSONResponse(
-                status_code=status.HTTP_200_OK,
-                content=create_content(
-                    query=query,
-                    status_code=status.HTTP_200_OK,
-                    message="Search fail (Konansearch result over 100)",
-                ),
-            )
-
-    except:  # Konansearch 에러
+    if candidates is None:  # Konansearch 에러
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             content=create_content(
                 query=query,
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 message="Search fail (Error occurred during Konansearch)",
+            ),
+        )
+
+    elif len(candidates) == 0:  # Konansearch 결과가 없는 경우
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=create_content(
+                query=query,
+                status_code=status.HTTP_200_OK,
+                message="Search fail (Konansearch result empty)",
+            ),
+        )
+
+    elif len(candidates) > 99:  # Konansearch 결과가 100개 이상인 경우
+        return JSONResponse(
+            status_code=status.HTTP_200_OK,
+            content=create_content(
+                query=query,
+                status_code=status.HTTP_200_OK,
+                message="Search fail (Konansearch result over 100)",
             ),
         )
 
