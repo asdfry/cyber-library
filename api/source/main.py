@@ -1,4 +1,5 @@
 import os
+import sys
 from typing import List
 
 from fastapi import FastAPI, status
@@ -6,7 +7,10 @@ from fastapi.responses import JSONResponse
 from konan_search import KonanSearch
 from pydantic import BaseModel
 from similarity_module import SimilarityModule
-from util import create_content
+from util import check_envs, create_content
+
+if not check_envs():
+    sys.exit(0)
 
 app = FastAPI()
 sm = SimilarityModule(device_num=os.getenv("DEVICE_NUM"), model_path=os.getenv("MODEL_PATH"))
@@ -19,6 +23,7 @@ class Query(BaseModel):
     publisher: str = ""
     publisher_year: str = ""
     isbn: str = ""
+    rec_key: str = ""
 
 
 class Candidate(BaseModel):
