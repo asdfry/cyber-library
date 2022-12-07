@@ -17,10 +17,18 @@ class KonanSearch:
             if v:
                 if k == "rec_key":
                     where_clause.append(f"{k.upper()}!='{v}'")
+                elif k in ["publisher_year", "isbn"]:
+                    where_clause.append(f"{k.upper()}='{v}'")
+                    where_clause.append("AND")
                 else:
                     where_clause.append(f"{k.upper()}='{v}'")
-        where_clause = " allwordthruindex AND ".join(where_clause)
-        where_clause += " allwordthruindex"
+                    where_clause.append("allwordthruindex")
+                    where_clause.append("AND")
+        # 쿼리 마지막이 AND로 끝나는 경우 처리
+        if where_clause[-1] == "AND":
+            where_clause = " ".join(where_clause[:-1])
+        else:
+            where_clause = " ".join(where_clause)
 
         for cnt in range(1, 11):  # 소켓 에러 방지용
             try:
@@ -90,5 +98,5 @@ class KonanSearch:
                 logger.warning(f"Qeury: {query}, Socket error occurred during Konansearch (retry: {cnt})")
                 time.sleep(0.1 * cnt)
                 continue
-        
+
         return None
