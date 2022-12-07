@@ -459,6 +459,10 @@ class SimilarityModule:
     def compute_with_model(self, query: dict, return_cands: list, sim_threshold: float): # return_cands:list[dict]
         start_time = time()
 
+        # query에 rec_key 포함 시 제거
+        if "rec_key" in query:
+            del query["rec_key"]
+
         # query의 모든 자료형 string화
         for key, val in query.items():
             query[key] = str(val)
