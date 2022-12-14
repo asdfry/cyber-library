@@ -2,12 +2,13 @@ import os
 import re
 import traceback
 from pathlib import Path
+from fastapi.responses import JSONResponse
 from typing import Dict, List
 
 from logger_main import logger
 
 
-def create_content(query: Dict, status_code: int, message: str, data: List[Dict] = []) -> Dict:
+def create_response(query: Dict, status_code: int, message: str, data: List[Dict] = []) -> Dict:
     content = {"status_code": status_code, "message": message, "data": data}
 
     if status_code == 200:
@@ -23,7 +24,7 @@ def create_content(query: Dict, status_code: int, message: str, data: List[Dict]
         traceback_content = re.sub(r"\s{2,}|\n", " ", traceback.format_exc()).strip()
         logger.error(f"{message}, Query: {query}, Exception: {traceback_content}")
 
-    return content
+    return JSONResponse(status_code=status_code, content=content)
 
 
 def check_envs():
