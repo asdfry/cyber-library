@@ -5,7 +5,7 @@ from fastapi.responses import JSONResponse
 from konan_search import KonanSearch
 from models import *
 from similarity_module import SimilarityModule
-from util import create_content
+from util import create_response
 
 router = APIRouter(prefix="")
 sm = SimilarityModule(device_num=os.getenv("DEVICE_NUM"), model_path=os.getenv("MODEL_PATH"))
@@ -28,34 +28,25 @@ def search(qac: QueryAndCandidates):
     candidates = qac["candidates"]
 
     if not query["title"]:  # 쿼리 중 타이틀 필드가 없는 경우
-        return JSONResponse(
+        return create_response(
+            query=query,
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content=create_content(
-                query=query,
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                message="Search fail (Field title empty)",
-            ),
+            message="Search fail (Field title empty)",
         )
 
     try:  # 정상 작동
-        return JSONResponse(
+        return create_response(
+            query=query,
             status_code=status.HTTP_200_OK,
-            content=create_content(
-                query=query,
-                status_code=status.HTTP_200_OK,
-                message="Search success",
-                data=sm.compute_with_model(query, candidates, sim_threshold=float(os.getenv("SIM_THRESHOLD"))),
-            ),
+            message="Search success",
+            data=sm.compute_with_model(query, candidates, sim_threshold=float(os.getenv("SIM_THRESHOLD"))),
         )
 
     except:  # 유사도 계산 중 에러
-        return JSONResponse(
+        return create_response(
+            query=query,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=create_content(
-                query=query,
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                message="Search fail (Error occurred during compute similarity)",
-            ),
+            message="Search fail (Error occurred during compute similarity)",
         )
 
 
@@ -64,64 +55,46 @@ def search_with_engine(query: Query):
     query = query.dict()
 
     if not query["title"]:  # 쿼리 중 타이틀 필드가 없는 경우
-        return JSONResponse(
+        return create_response(
+            query=query,
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            content=create_content(
-                query=query,
-                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-                message="Search fail (Field title empty)",
-            ),
+            message="Search fail (Field title empty)",
         )
 
     candidates = ks.search_with_engine(query, max_record=200)
 
     if candidates is None:  # Konansearch 에러
-        return JSONResponse(
+        return create_response(
+            query=query,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=create_content(
-                query=query,
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                message="Search fail (Error occurred during Konansearch)",
-            ),
+            message="Search fail (Error occurred during Konansearch)",
         )
 
     elif len(candidates) == 0:  # Konansearch 결과가 없는 경우
-        return JSONResponse(
+        return create_response(
+            query=query,
             status_code=status.HTTP_200_OK,
-            content=create_content(
-                query=query,
-                status_code=status.HTTP_200_OK,
-                message="Search fail (Konansearch result empty)",
-            ),
+            message="Search fail (Konansearch result empty)",
         )
 
     elif len(candidates) > 99:  # Konansearch 결과가 100개 이상인 경우
-        return JSONResponse(
+        return create_response(
+            query=query,
             status_code=status.HTTP_200_OK,
-            content=create_content(
-                query=query,
-                status_code=status.HTTP_200_OK,
-                message="Search fail (Konansearch result over 100)",
-            ),
+            message="Search fail (Konansearch result over 100)",
         )
 
     try:  # 정상 작동
-        return JSONResponse(
+        return create_response(
+            query=query,
             status_code=status.HTTP_200_OK,
-            content=create_content(
-                query=query,
-                status_code=status.HTTP_200_OK,
-                message="Search success",
-                data=sm.compute_with_model(query, candidates, sim_threshold=float(os.getenv("SIM_THRESHOLD"))),
-            ),
+            message="Search success",
+            data=sm.compute_with_model(query, candidates, sim_threshold=float(os.getenv("SIM_THRESHOLD"))),
         )
 
     except:  # 유사도 계산 중 에러
-        return JSONResponse(
+        return create_response(
+            query=query,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            content=create_content(
-                query=query,
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                message="Search fail (Error occurred during compute similarity)",
-            ),
+            message="Search fail (Error occurred during compute similarity)",
         )
