@@ -38,7 +38,7 @@ class KonanSearch:
                 ks.Search(
                     hc,
                     "192.168.20.31:7577",  # server address (java.lang.String)
-                    "abbrnew_utf8_con_all",  # scenario name (java.lang.String)
+                    "tb_cu_abbr",  # scenario name (java.lang.String)
                     where_clause,  # where clause (java.lang.String)
                     "",  # sorting clause (java.lang.String)
                     "",  # highlight text (java.lang.String)
