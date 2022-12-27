@@ -17,14 +17,17 @@ class KonanSearch:
             if v:
                 if k == "rec_key":
                     where_clause.append(f"{k.upper()}!='{v}'")
-                elif k in ["publisher_year", "isbn"]:
-                    where_clause.append(f"{k.upper()}='{v}'")
-                    where_clause.append("AND")
-                else:
-                    where_clause.append(f"{k.upper()}='{v}'")
+                elif k == "author":
+                    where_clause.append(f"{k.upper()}_N='{v}'")
+                    where_clause.append("anyword")
+                elif k in ["title", "publisher"]:
+                    where_clause.append(f"{k.upper()}_N='{v}'")
                     where_clause.append("allwordthruindex")
-                    where_clause.append("AND")
-        # 쿼리 마지막이 AND로 끝나는 경우 처리
+                elif k in ["isbn", "publisher_year"]:
+                    where_clause.append(f"{k.upper()}='{v}'")
+                where_clause.append("AND")
+
+        # 검색 쿼리 마지막이 AND로 끝나는 경우 처리
         if where_clause[-1] == "AND":
             where_clause = " ".join(where_clause[:-1])
         else:
